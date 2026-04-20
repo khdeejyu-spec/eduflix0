@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduFlex - المساعد التعليمي الذكي</title>
+    <title>EduFlex - المنصة التعليمية المتكاملة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -13,65 +13,70 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* تصميم البطاقات */
         .perspective { perspective: 1000px; }
-        .flashcard { transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer; height: 260px; position: relative; }
+        .flashcard { transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer; height: 220px; position: relative; }
         .flashcard.flipped { transform: rotateY(180deg); }
-        .card-face { backface-visibility: hidden; position: absolute; width: 100%; height: 100%; border-radius: 1.5rem; display: flex; align-items: center; justify-content: center; padding: 2rem; text-align: center; border: 2px solid #e2e8f0; background: white; }
+        .card-face { backface-visibility: hidden; position: absolute; width: 100%; height: 100%; border-radius: 1.5rem; display: flex; align-items: center; justify-content: center; padding: 1.5rem; text-align: center; border: 2px solid #e2e8f0; background: white; }
         .card-back { background: #2563eb; color: white; transform: rotateY(180deg); border: none; }
-        
-        /* فقاعات المحادثة */
-        .chat-bubble-ai { border-radius: 20px 20px 4px 20px; }
-        .chat-bubble-user { border-radius: 20px 20px 20px 4px; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
 
     <aside class="hidden lg:flex w-72 bg-white border-l p-6 flex-col shadow-sm z-50">
-        <div class="flex items-center gap-3 mb-12">
-            <div class="p-2 bg-blue-600 rounded-xl shadow-lg text-white">
-                <i data-lucide="sparkles"></i>
-            </div>
+        <div class="flex items-center gap-3 mb-10">
+            <div class="p-2 bg-blue-600 rounded-xl shadow-lg text-white"><i data-lucide="sparkles"></i></div>
             <h1 class="text-2xl font-black text-blue-600 tracking-tighter">EduFlex</h1>
         </div>
-        <nav class="space-y-3 flex-1">
+        <nav class="space-y-2 flex-1">
             <button onclick="switchTab('dashboard')" id="nav-dashboard" class="sidebar-item active w-full flex items-center gap-4 p-4 rounded-2xl font-bold transition-all"><i data-lucide="layout-dashboard"></i> لوحة التحكم</button>
             <button onclick="switchTab('chat')" id="nav-chat" class="sidebar-item w-full flex items-center gap-4 p-4 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 transition-all"><i data-lucide="message-circle"></i> المساعد الذكي</button>
             <button onclick="switchTab('cards')" id="nav-cards" class="sidebar-item w-full flex items-center gap-4 p-4 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 transition-all"><i data-lucide="layers"></i> بطاقات المراجعة</button>
+            <button onclick="switchTab('achievements')" id="nav-achievements" class="sidebar-item w-full flex items-center gap-4 p-4 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 transition-all"><i data-lucide="award"></i> الإنجازات</button>
         </nav>
-        <div class="mt-auto p-4 bg-blue-50 rounded-2xl border border-blue-100 text-center">
-            <p id="api-status" class="text-[10px] font-bold text-blue-600 uppercase">بانتظار ربط الذكاء الاصطناعي...</p>
+        <div class="p-4 bg-blue-50 rounded-2xl border text-center">
+            <p class="text-[10px] font-bold text-blue-600 uppercase">المستوى الحالي: طالب متفوق 🏆</p>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="p-6 bg-white border-b flex justify-between items-center">
+    <main class="flex-1 flex flex-col overflow-hidden relative">
+        <header class="p-6 bg-white border-b flex justify-between items-center z-40">
             <h2 id="header-title" class="text-xl font-black text-slate-800">لوحة التحكم ✨</h2>
             <div class="bg-orange-50 text-orange-600 px-4 py-2 rounded-full text-xs font-black border border-orange-100 italic">سلسلة 12 يوم 🔥</div>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-6 lg:p-10">
+        <div class="flex-1 overflow-y-auto p-6 lg:p-10 bg-slate-50">
             
-            <div id="dashboard" class="tab-content active">
-                <div class="bg-gradient-to-br from-blue-600 to-indigo-800 p-10 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden mb-8">
+            <div id="dashboard" class="tab-content active space-y-8">
+                <div class="bg-gradient-to-br from-blue-600 to-indigo-800 p-10 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
                     <div class="relative z-10 max-w-lg">
-                        <h3 class="text-4xl font-black mb-4">جاهز لتبسيط العلم؟</h3>
-                        <p class="text-blue-100 mb-8 opacity-90 leading-relaxed text-lg">بنينا EduFlex ليحول المفاهيم المعقدة إلى قصص سهلة باستخدام الذكاء الاصطناعي.</p>
-                        <button onclick="switchTab('chat')" class="bg-white text-blue-600 px-8 py-3 rounded-2xl font-black shadow-xl hover:scale-105 transition-all">ابدأ المحادثة الآن</button>
+                        <h3 class="text-3xl font-black mb-2">أهلاً بك مجدداً، أحمد!</h3>
+                        <p class="text-blue-100 mb-6 opacity-90 leading-relaxed text-sm">لديك 3 مفاهيم جديدة لتبسيطها اليوم في مادة الفيزياء.</p>
+                        <button onclick="switchTab('chat')" class="bg-white text-blue-600 px-6 py-2 rounded-xl font-black shadow-lg">اسأل المساعد الآن</button>
                     </div>
-                    <i data-lucide="brain-circuit" class="absolute -left-10 -bottom-10 w-80 h-80 opacity-10 rotate-12"></i>
+                    <i data-lucide="brain-circuit" class="absolute -left-10 -bottom-10 w-64 h-64 opacity-10 rotate-12"></i>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-3xl border shadow-sm flex items-center gap-4 italic font-bold text-slate-600">
-                        <i data-lucide="check-circle" class="text-green-500"></i> ميزة الشرح التبسيطي
+                <h4 class="font-black text-slate-800">استمر في التعلم (موادي)</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-4">
+                        <div class="flex justify-between items-center">
+                            <div class="p-3 bg-blue-50 text-blue-600 rounded-xl"><i data-lucide="atom"></i></div>
+                            <span class="text-xs font-bold text-blue-600">65% مكتمل</span>
+                        </div>
+                        <h5 class="font-bold">الفيزياء الكمية</h5>
+                        <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-600" style="width: 65%"></div>
+                        </div>
                     </div>
-                    <div class="bg-white p-6 rounded-3xl border shadow-sm flex items-center gap-4 italic font-bold text-slate-600">
-                        <i data-lucide="check-circle" class="text-green-500"></i> توليد بطاقات ذكية
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl border shadow-sm flex items-center gap-4 italic font-bold text-slate-600">
-                        <i data-lucide="check-circle" class="text-green-500"></i> دعم بلهجة بسيطة
+                    <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-4">
+                        <div class="flex justify-between items-center">
+                            <div class="p-3 bg-purple-50 text-purple-600 rounded-xl"><i data-lucide="binary"></i></div>
+                            <span class="text-xs font-bold text-purple-600">40% مكتمل</span>
+                        </div>
+                        <h5 class="font-bold">الرياضيات المتقدمة</h5>
+                        <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-purple-600" style="width: 40%"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -80,111 +85,98 @@
                 <div id="chat-box" class="flex-1 bg-white rounded-[2rem] border p-6 overflow-y-auto space-y-4 mb-4 shadow-sm min-h-[400px]">
                     <div class="flex gap-4">
                         <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shrink-0 shadow-lg"><i data-lucide="sparkles" class="w-5 h-5"></i></div>
-                        <div class="bg-slate-50 p-5 rounded-2xl rounded-tr-none text-sm max-w-[85%] border border-slate-100">أهلاً بك! أنا مساعدك التعليمي. ما هو المفهوم الصعب الذي تريد شرحه؟</div>
+                        <div class="bg-slate-50 p-5 rounded-2xl rounded-tr-none text-sm max-w-[85%] border border-slate-100 italic">أهلاً بك! أنا إيدوفليكس، أخبرني ما الموضوع الذي تريد تبسيطه؟</div>
                     </div>
                 </div>
-                <div class="flex gap-3 p-3 bg-white rounded-2xl border shadow-xl items-center sticky bottom-0">
-                    <input id="chat-input" type="text" class="flex-1 p-3 outline-none text-sm" placeholder="اطلب شرحاً لأي مفهوم...">
-                    <button onclick="sendChat()" class="bg-blue-600 text-white p-4 rounded-xl shadow-lg hover:bg-blue-700 transition-all"><i data-lucide="send" class="w-5 h-5"></i></button>
+                <div class="flex gap-3 p-3 bg-white rounded-2xl border shadow-xl items-center">
+                    <input id="chat-input" type="text" class="flex-1 p-3 outline-none text-sm" placeholder="مثلاً: اشرح لي قانون الجاذبية ببساطة...">
+                    <button onclick="sendChat()" class="bg-blue-600 text-white p-4 rounded-xl shadow-lg"><i data-lucide="send" class="w-5 h-5"></i></button>
                 </div>
             </div>
 
-            <div id="cards" class="tab-content space-y-8 max-w-5xl mx-auto">
+            <div id="cards" class="tab-content space-y-8 max-w-4xl mx-auto">
                 <div class="bg-white p-6 rounded-3xl border shadow-sm flex flex-col md:flex-row gap-4 items-center">
-                    <div class="flex-1 text-right">
-                        <h4 class="font-black text-slate-800">مولد البطاقات الذكي ✨</h4>
-                        <p class="text-xs text-slate-400">حوّل دروسك إلى تحديات سريعة وممتعة.</p>
-                    </div>
-                    <input id="card-topic" type="text" class="w-full md:w-64 p-3 bg-slate-50 rounded-xl outline-none border" placeholder="ادخل اسم الموضوع...">
-                    <button onclick="generateCards()" id="card-btn" class="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition-all">توليد البطاقات</button>
+                    <div class="flex-1 text-right"><h4 class="font-black text-slate-800">توليد بطاقات المراجعة</h4><p class="text-xs text-slate-400">حوّل دروسك إلى أسئلة وأجوبة ذكية.</p></div>
+                    <input id="card-topic" type="text" class="w-full md:w-64 p-3 bg-slate-50 rounded-xl outline-none" placeholder="ادخل اسم الموضوع...">
+                    <button onclick="generateCards()" id="card-btn" class="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold">توليد ✨</button>
                 </div>
-                <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+                <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
             </div>
 
+            <div id="achievements" class="tab-content max-w-4xl mx-auto text-center space-y-8">
+                <div class="w-32 h-32 bg-yellow-100 rounded-full flex items-center justify-center mx-auto border-4 border-white shadow-xl">
+                    <i data-lucide="trophy" class="w-16 h-16 text-yellow-600"></i>
+                </div>
+                <h3 class="text-3xl font-black italic text-slate-800">أنت أسطورة! 🏆</h3>
+                <p class="text-slate-500">لقد نجحت في تبسيط 8 مفاهيم معقدة هذا الأسبوع.</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="p-4 bg-white rounded-2xl border shadow-sm"><i data-lucide="zap" class="w-8 h-8 text-orange-400 mx-auto mb-2"></i><p class="text-[10px] font-bold">ذكاء خارق</p></div>
+                    <div class="p-4 bg-white rounded-2xl border shadow-sm"><i data-lucide="book" class="w-8 h-8 text-blue-400 mx-auto mb-2"></i><p class="text-[10px] font-bold">قارئ نهم</p></div>
+                    <div class="p-4 bg-white rounded-2xl border shadow-sm opacity-40"><i data-lucide="target" class="w-8 h-8 text-gray-400 mx-auto mb-2"></i><p class="text-[10px] font-bold">دقة متناهية</p></div>
+                    <div class="p-4 bg-white rounded-2xl border shadow-sm opacity-40"><i data-lucide="award" class="w-8 h-8 text-gray-400 mx-auto mb-2"></i><p class="text-[10px] font-bold">البطل الصاعد</p></div>
+                </div>
+            </div>
         </div>
+
+        <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t p-4 flex justify-around items-center z-50 shadow-2xl">
+            <button onclick="switchTab('dashboard')" class="text-blue-600 flex flex-col items-center gap-1"><i data-lucide="layout-dashboard" class="w-6 h-6"></i></button>
+            <button onclick="switchTab('chat')" class="bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center -mt-10 shadow-xl"><i data-lucide="sparkles" class="w-6 h-6"></i></button>
+            <button onclick="switchTab('cards')" class="text-slate-400 flex flex-col items-center gap-1"><i data-lucide="layers" class="w-6 h-6"></i></button>
+        </nav>
     </main>
 
     <script>
         lucide.createIcons();
-
-        // إعدادات الـ API (تأكدي من وضع مفتاحك هنا)
-        const API_KEY = "ضعي_مفتاحك_هنا"; 
+        const API_KEY = "ضعي_مفتاحك_هنا"; // <--- ضعي مفتاحك هنا
         const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
-        if(API_KEY !== "ضعي_مفتاحك_هنا") {
-            document.getElementById('api-status').innerText = "متصل بالذكاء الاصطناعي ✅";
-            document.getElementById('api-status').className = "text-[10px] font-bold text-emerald-600 uppercase";
-        }
-
-        // التبديل بين التبويبات
         function switchTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
             document.getElementById('nav-'+id).classList.add('active');
-            document.getElementById('header-title').innerText = id === 'dashboard' ? 'لوحة التحكم ✨' : (id === 'chat' ? 'المساعد الذكي ✨' : 'بطاقات المراجعة ✨');
+            const titles = { dashboard: 'لوحة التحكم ✨', chat: 'المساعد الذكي ✨', cards: 'بطاقات المراجعة ✨', achievements: 'إنجازاتك 🏆' };
+            document.getElementById('header-title').innerText = titles[id];
         }
 
-        // محرك Gemini
-        async function callGemini(prompt, sys) {
+        async function callGemini(p, s) {
             try {
-                const response = await fetch(`${API_URL}?key=${API_KEY}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }],
-                        systemInstruction: { parts: [{ text: sys }] }
-                    })
+                const res = await fetch(`${API_URL}?key=${API_KEY}`, {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: p }] }], systemInstruction: { parts: [{ text: s }] } })
                 });
-                const data = await response.json();
-                return data.candidates[0].content.parts[0].text;
-            } catch (error) { return "عذراً، يرجى التحقق من مفتاح الـ API في الكود."; }
+                const d = await res.json();
+                return d.candidates[0].content.parts[0].text;
+            } catch (e) { return "عذراً، يرجى ربط مفتاح الـ API ليعمل الذكاء الاصطناعي."; }
         }
 
-        // إرسال المحادثة
         async function sendChat() {
-            const input = document.getElementById('chat-input');
-            const box = document.getElementById('chat-box');
-            if(!input.value.trim()) return;
-
-            const text = input.value;
-            input.value = '';
-            box.innerHTML += `<div class="flex flex-row-reverse gap-4"><div class="bg-blue-600 text-white p-5 rounded-2xl rounded-tl-none text-sm max-w-[85%] chat-bubble-user shadow-md">${text}</div></div>`;
-            box.scrollTop = box.scrollHeight;
-
-            const aiText = await callGemini(text, "أنت مساعد تعليمي ذكي يبسط العلوم بلهجة عربية بيضاء بسيطة جداً.");
-            box.innerHTML += `<div class="flex gap-4"><div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shrink-0"><i data-lucide="sparkles" class="w-5 h-5"></i></div><div class="bg-white p-5 rounded-2xl rounded-tr-none text-sm border shadow-sm chat-bubble-ai">${aiText}</div></div>`;
-            box.scrollTop = box.scrollHeight;
+            const i = document.getElementById('chat-input');
+            const b = document.getElementById('chat-box');
+            if(!i.value.trim()) return;
+            const t = i.value; i.value = '';
+            b.innerHTML += `<div class="flex flex-row-reverse gap-4"><div class="bg-blue-600 text-white p-4 rounded-2xl rounded-tl-none text-xs max-w-[85%] shadow-md">${t}</div></div>`;
+            b.scrollTop = b.scrollHeight;
+            const ai = await callGemini(t, "أنت مساعد دراسي يبسط العلوم بلهجة عربية بسيطة جداً.");
+            b.innerHTML += `<div class="flex gap-4"><div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shrink-0"><i data-lucide="sparkles" class="w-4 h-4"></i></div><div class="bg-white p-4 rounded-2xl rounded-tr-none text-xs border shadow-sm">${ai}</div></div>`;
+            b.scrollTop = b.scrollHeight;
             lucide.createIcons();
         }
 
-        // توليد البطاقات
         async function generateCards() {
-            const topic = document.getElementById('card-topic').value;
-            const grid = document.getElementById('cards-grid');
-            const btn = document.getElementById('card-btn');
-            if(!topic) return;
-
-            btn.innerText = "جاري البناء...";
-            grid.innerHTML = '<div class="col-span-full text-center py-20 text-slate-400 font-bold animate-pulse">يتم الآن توليد 4 بطاقات مراجعة ذكية...</div>';
-
-            const sys = `Generate 4 educational flashcards in Arabic about: ${topic}. Format as JSON: {"cards": [{"q": "question", "a": "answer"}]}. No markdown.`;
-            
+            const t = document.getElementById('card-topic').value;
+            const g = document.getElementById('cards-grid');
+            if(!t) return;
+            g.innerHTML = '<div class="col-span-full py-10 text-center animate-pulse font-bold text-slate-400">جاري التوليد...</div>';
+            const sys = `Generate 4 educational flashcards in Arabic about: ${t}. Format as JSON: {"cards": [{"q": "question", "a": "answer"}]}. No markdown.`;
             try {
-                const res = await callGemini(topic, sys);
-                const data = JSON.parse(res.replace(/```json|```/g, ''));
-                grid.innerHTML = '';
-                data.cards.forEach(c => {
-                    grid.innerHTML += `
-                        <div class="perspective" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
-                            <div class="flashcard">
-                                <div class="card-face font-black text-slate-800 text-lg">${c.q}</div>
-                                <div class="card-face card-back text-sm font-medium leading-relaxed">${c.a}</div>
-                            </div>
-                        </div>`;
+                const res = await callGemini(t, sys);
+                const d = JSON.parse(res.replace(/```json|```/g, ''));
+                g.innerHTML = '';
+                d.cards.forEach(c => {
+                    g.innerHTML += `<div class="perspective" onclick="this.querySelector('.flashcard').classList.toggle('flipped')"><div class="flashcard"><div class="card-face font-black text-slate-800 text-sm">${c.q}</div><div class="card-face card-back text-[10px] font-medium leading-relaxed">${c.a}</div></div></div>`;
                 });
-            } catch (e) { grid.innerHTML = '<p class="text-red-500 text-center col-span-full">تأكد من ربط مفتاح الـ API بشكل صحيح.</p>'; }
-            btn.innerText = "توليد البطاقات";
+            } catch (e) { g.innerHTML = '<p class="text-red-500 text-center col-span-full">تأكد من المفتاح في الكود.</p>'; }
             lucide.createIcons();
         }
     </script>
