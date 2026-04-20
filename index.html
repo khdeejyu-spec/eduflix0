@@ -3,117 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إيدوفليكس - المساعد التعليمي الذكي</title>
+    <title>EduFlex - واجهة التعليم المطورة</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
-        .pixel-icon { image-rendering: pixelated; width: 40px; }
-        .active-tab { background: #2563eb; color: white; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .card-inner { transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer; position: relative; height: 200px; }
-        .flipped .card-inner { transform: rotateY(180deg); }
-        .backface-hidden { backface-visibility: hidden; position: absolute; inset: 0; }
-        .rotate-y-180 { transform: rotateY(180deg); }
+        body { font-family: 'Cairo', sans-serif; background-color: #f1f5f9; scroll-behavior: smooth; }
+        
+        /* تحسينات الواجهة */
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.4); }
+        .sidebar-item { transition: all 0.3s; border-radius: 1rem; }
+        .sidebar-item.active { background: #2563eb; color: white; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4); }
+        
+        /* نظام البطاقات القوي */
+        .perspective-1000 { perspective: 1000px; }
+        .flashcard { transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer; height: 250px; }
+        .flashcard.flipped { transform: rotateY(180deg); }
+        .card-face { backface-visibility: hidden; position: absolute; width: 100%; height: 100%; border-radius: 1.5rem; display: flex; align-items: center; justify-content: center; padding: 2rem; text-align: center; }
+        .card-front { background: white; border: 2px solid #e2e8f0; color: #1e293b; }
+        .card-back { background: #2563eb; color: white; transform: rotateY(180deg); }
+
+        /* إخفاء الأقسام غير النشطة */
+        .tab-content { display: none; opacity: 0; transform: translateY(10px); }
+        .tab-content.active { display: block; opacity: 1; transform: translateY(0); transition: all 0.4s ease; }
     </style>
 </head>
-<body class="h-screen flex flex-col lg:flex-row overflow-hidden">
+<body class="flex h-screen overflow-hidden">
 
-    <aside class="hidden lg:flex w-64 bg-white border-l p-6 flex-col">
-        <div class="flex items-center gap-3 mb-10">
-            <div class="bg-blue-600 p-1 rounded-lg">
-                <svg width="32" height="32" viewBox="0 0 16 16" fill="white"><path d="M7 2h2v2H7V2zm-1 2h4v2H6V4zm-1 2h6v4H5V6zm2 4h2v2H7v-2zm0 2h2v2H7v-2z"/></svg>
+    <aside class="hidden lg:flex w-72 bg-white border-l p-6 flex-col shadow-xl z-50">
+        <div class="flex items-center gap-3 mb-12">
+            <div class="p-2 bg-blue-600 rounded-xl shadow-lg">
+                <svg width="32" height="32" viewBox="0 0 16 16" fill="none"><path d="M7 2h2v2H7V2zm-1 2h4v2H6V4zm-1 2h6v4H5V6zm2 4h2v2H7v-2zm0 2h2v2H7v-2z" fill="white"/></svg>
             </div>
-            <h1 class="text-xl font-black text-blue-600">إيدوفليكس</h1>
+            <h1 class="text-2xl font-black text-blue-600 tracking-tighter">EduFlex</h1>
         </div>
-        <nav class="space-y-2">
-            <button onclick="showTab('home')" id="nav-home" class="nav-btn active-tab w-full text-right p-3 rounded-xl flex items-center gap-3 font-bold"><i data-lucide="home"></i> الرئيسية</button>
-            <button onclick="showTab('chat')" id="nav-chat" class="nav-btn w-full text-right p-3 rounded-xl flex items-center gap-3 font-bold text-gray-500 hover:bg-gray-50"><i data-lucide="sparkles"></i> المساعد الذكي</button>
-            <button onclick="showTab('cards')" id="nav-cards" class="nav-btn w-full text-right p-3 rounded-xl flex items-center gap-3 font-bold text-gray-500 hover:bg-gray-50"><i data-lucide="layers"></i> البطاقات</button>
+        
+        <nav class="space-y-3 flex-1">
+            <button onclick="switchTab('dashboard')" id="btn-dashboard" class="sidebar-item active w-full flex items-center gap-4 p-4 font-bold">
+                <i data-lucide="layout-dashboard"></i> لوحة التحكم
+            </button>
+            <button onclick="switchTab('ai-tutor')" id="btn-ai-tutor" class="sidebar-item w-full flex items-center gap-4 p-4 font-bold text-slate-500 hover:bg-slate-50">
+                <i data-lucide="sparkles"></i> المساعد الذكي
+            </button>
+            <button onclick="switchTab('cards')" id="btn-cards" class="sidebar-item w-full flex items-center gap-4 p-4 font-bold text-slate-500 hover:bg-slate-50">
+                <i data-lucide="layers"></i> بطاقات المراجعة
+            </button>
         </nav>
+
+        <div class="mt-auto p-4 bg-slate-50 rounded-2xl flex items-center gap-3 border border-slate-100">
+            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">أ</div>
+            <div class="text-xs">
+                <p class="font-bold">أحمد محمد</p>
+                <p class="text-slate-400">طالب متميز</p>
+            </div>
+        </div>
     </aside>
 
-    <main class="flex-1 flex flex-col relative overflow-hidden">
-        <header class="p-6 bg-white border-b flex justify-between items-center">
-            <h2 id="title" class="text-lg font-bold">لوحة التحكم ✨</h2>
-            <div class="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-xs font-bold">سلسلة 12 يوم 🔥</div>
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="p-6 bg-white/80 backdrop-blur-md border-b flex justify-between items-center z-40">
+            <h2 id="current-title" class="text-xl font-black text-slate-800">لوحة التحكم</h2>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2 bg-orange-50 text-orange-600 px-4 py-2 rounded-full text-xs font-black border border-orange-100">
+                    <i data-lucide="flame" class="w-4 h-4"></i> سلسلة تعلم: 12 يوم
+                </div>
+                <button class="p-2 bg-slate-100 rounded-xl text-slate-600 hover:bg-slate-200 transition-colors">
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                </button>
+            </div>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-6">
-            <div id="home" class="tab-content active space-y-6">
-                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 rounded-[2rem] text-white">
-                    <h3 class="text-2xl font-bold mb-2">أهلاً بك يا بطل!</h3>
-                    <p class="opacity-90 mb-4">ما هو المفهوم الذي تريد تبسيطه اليوم؟</p>
-                    <button onclick="showTab('chat')" class="bg-white text-blue-600 px-6 py-2 rounded-xl font-bold">ابدأ الآن</button>
+        <div class="flex-1 overflow-y-auto p-6 lg:p-10">
+            
+            <div id="dashboard" class="tab-content active space-y-8">
+                <div class="bg-gradient-to-br from-blue-600 to-indigo-800 p-10 rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl">
+                    <div class="relative z-10 max-w-lg">
+                        <h3 class="text-4xl font-black mb-4 leading-tight">جاهز لتبسيط مفاهيمك؟</h3>
+                        <p class="text-blue-100 text-lg mb-8 opacity-90 leading-relaxed">استخدم قوة الذكاء الاصطناعي لتحويل المواد المعقدة إلى شروحات سهلة وبسيطة.</p>
+                        <button onclick="switchTab('ai-tutor')" class="bg-white text-blue-600 px-8 py-3 rounded-2xl font-black shadow-xl hover:scale-105 transition-all">ابدأ المحادثة الآن</button>
+                    </div>
+                    <i data-lucide="brain-circuit" class="absolute -left-10 -bottom-10 w-80 h-80 opacity-10 rotate-12"></i>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-white p-6 rounded-2xl border shadow-sm">
-                        <h4 class="font-bold mb-2">الفيزياء</h4>
-                        <div class="h-2 bg-gray-100 rounded-full"><div class="h-full bg-blue-500 w-2/3 rounded-full"></div></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-5">
+                        <div class="p-4 bg-blue-50 text-blue-600 rounded-2xl"><i data-lucide="book-open"></i></div>
+                        <div><p class="text-xs text-slate-400 font-bold">الدروس المنجزة</p><p class="text-xl font-black">24 درس</p></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-5">
+                        <div class="p-4 bg-purple-50 text-purple-600 rounded-2xl"><i data-lucide="clock"></i></div>
+                        <div><p class="text-xs text-slate-400 font-bold">وقت الدراسة</p><p class="text-xl font-black">18.5 ساعة</p></div>
                     </div>
                 </div>
             </div>
 
-            <div id="chat" class="tab-content h-full flex flex-col">
-                <div id="messages" class="flex-1 space-y-4 mb-4 overflow-y-auto p-2">
-                    <div class="bg-blue-50 p-4 rounded-2xl max-w-[80%] text-sm">أنا مساعدك الذكي، كيف أساعدك في دراستك اليوم؟</div>
+            <div id="ai-tutor" class="tab-content h-full flex flex-col max-w-4xl mx-auto">
+                <div id="chat-container" class="flex-1 bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 overflow-y-auto space-y-4 mb-6 min-h-[400px]">
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shrink-0 shadow-lg"><i data-lucide="sparkles" class="w-5 h-5"></i></div>
+                        <div class="bg-slate-50 p-5 rounded-2xl rounded-tr-none text-sm leading-relaxed max-w-[85%] border border-slate-100">
+                            أهلاً بك! أنا **EduFlex AI**. أخبرني ما هو الموضوع الذي تجد صعوبة فيه، وسأقوم بتبسيطه لك فوراً.
+                        </div>
+                    </div>
                 </div>
-                <div class="flex gap-2 bg-white p-2 rounded-2xl border shadow-lg">
-                    <input id="userInput" type="text" class="flex-1 p-2 outline-none" placeholder="اشرح لي...">
-                    <button onclick="ask()" class="bg-blue-600 text-white p-3 rounded-xl"><i data-lucide="send"></i></button>
+                <div class="flex gap-3 bg-white p-3 rounded-2xl shadow-xl border border-slate-200 items-center">
+                    <input id="chat-input" type="text" class="flex-1 p-3 outline-none text-sm" placeholder="مثلاً: اشرح لي قانون الجاذبية بلهجة بسيطة...">
+                    <button class="bg-blue-600 text-white p-4 rounded-xl shadow-lg hover:bg-blue-700 transition-all"><i data-lucide="send" class="w-5 h-5"></i></button>
                 </div>
             </div>
 
-            <div id="cards" class="tab-content">
-                <div class="flex gap-2 mb-8">
-                    <input id="topic" type="text" class="flex-1 p-3 border rounded-xl" placeholder="موضوع البطاقات...">
-                    <button onclick="genCards()" class="bg-indigo-600 text-white px-6 rounded-xl font-bold">توليد ✨</button>
+            <div id="cards" class="tab-content max-w-5xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+                    <div class="text-right">
+                        <h3 class="text-2xl font-black text-slate-800">بطاقات الاستذكار ✨</h3>
+                        <p class="text-slate-400 text-sm">حول دروسك إلى تحديات سريعة</p>
+                    </div>
+                    <div class="flex gap-3 bg-white p-2 rounded-2xl border shadow-sm w-full md:w-auto">
+                        <input id="card-topic" type="text" class="p-2 outline-none text-sm w-full" placeholder="ادخل عنوان الموضوع...">
+                        <button onclick="createDemoCards()" class="bg-indigo-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-indigo-700 transition-all">توليد</button>
+                    </div>
                 </div>
-                <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+
+                <div id="cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    </div>
             </div>
+
         </div>
     </main>
 
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t p-4 flex justify-around items-center z-50">
+        <button onclick="switchTab('dashboard')" class="text-blue-600 flex flex-col items-center gap-1">
+            <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+            <span class="text-[10px] font-bold">الرئيسية</span>
+        </button>
+        <button onclick="switchTab('ai-tutor')" class="relative -top-8 bg-blue-600 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center border-4 border-white">
+            <i data-lucide="sparkles" class="w-7 h-7"></i>
+        </button>
+        <button onclick="switchTab('cards')" class="text-slate-400 flex flex-col items-center gap-1">
+            <i data-lucide="layers" class="w-6 h-6"></i>
+            <span class="text-[10px] font-bold">البطاقات</span>
+        </button>
+    </nav>
+
     <script>
         lucide.createIcons();
-        function showTab(id) {
+
+        // نظام التبديل بين الأقسام
+        function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-tab', 'text-white'));
-            document.getElementById('nav-'+id).classList.add('active-tab');
-            document.getElementById('title').innerText = id === 'home' ? 'لوحة التحكم ✨' : (id === 'chat' ? 'المساعد الذكي ✨' : 'بطاقات المراجعة ✨');
+            document.getElementById(tabId).classList.add('active');
+            
+            document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if(activeBtn) activeBtn.classList.add('active');
+
+            const titles = { dashboard: 'لوحة التحكم', 'ai-tutor': 'المساعد الذكي ✨', cards: 'بطاقات الاستذكار ✨' };
+            document.getElementById('current-title').innerText = titles[tabId];
         }
 
-        function ask() {
-            const val = document.getElementById('userInput').value;
-            if(!val) return;
-            const msgBox = document.getElementById('messages');
-            msgBox.innerHTML += `<div class="bg-gray-100 p-4 rounded-2xl max-w-[80%] mr-auto text-sm">${val}</div>`;
-            document.getElementById('userInput').value = '';
-            setTimeout(() => {
-                msgBox.innerHTML += `<div class="bg-blue-600 text-white p-4 rounded-2xl max-w-[80%] text-sm">هذا شرح مبسط لـ (${val}): تخيل أن الأمر مثل... [هنا يتم ربط API جيميناي]</div>`;
-                msgBox.scrollTop = msgBox.scrollHeight;
-            }, 1000);
-        }
-
-        function genCards() {
-            const grid = document.getElementById('cardsGrid');
-            grid.innerHTML = '<p class="col-span-full text-center animate-pulse">جاري التوليد بذكاء...</p>';
-            setTimeout(() => {
-                grid.innerHTML = '';
-                for(let i=1; i<=4; i++) {
-                    grid.innerHTML += `
-                    <div class="perspective" onclick="this.classList.toggle('flipped')">
-                        <div class="card-inner w-full h-full">
-                            <div class="backface-hidden bg-white border p-6 rounded-3xl flex items-center justify-center font-bold">سؤال ${i}</div>
-                            <div class="backface-hidden rotate-y-180 bg-indigo-600 text-white p-6 rounded-3xl flex items-center justify-center text-sm">الإجابة الذكية لهذا السؤال...</div>
+        // تحسين البطاقات (UI Logic)
+        function createDemoCards() {
+            const grid = document.getElementById('cards-grid');
+            const topic = document.getElementById('card-topic').value || 'عام';
+            grid.innerHTML = '';
+            
+            for(let i=1; i<=6; i++) {
+                const card = document.createElement('div');
+                card.className = 'perspective-1000';
+                card.innerHTML = `
+                    <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                        <div class="card-face card-front shadow-sm border-2">
+                            <div class="space-y-4">
+                                <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">سؤال ${i}</span>
+                                <p class="font-bold text-lg leading-relaxed text-slate-700">هنا سيظهر سؤال ذكي حول موضوع (${topic})؟</p>
+                                <p class="text-[10px] text-slate-300 font-bold uppercase tracking-widest mt-4">انقر للكشف عن الإجابة</p>
+                            </div>
                         </div>
-                    </div>`;
-                }
-            }, 1500);
+                        <div class="card-face card-back shadow-2xl">
+                            <div class="space-y-4">
+                                <i data-lucide="check-circle" class="w-10 h-10 mx-auto text-blue-200 mb-4"></i>
+                                <p class="text-sm font-medium leading-relaxed">هنا ستظهر الإجابة النموذجية والمبسطة التي ولدها الذكاء الاصطناعي للمساعدة في الفهم.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+            lucide.createIcons();
         }
     </script>
 </body>
