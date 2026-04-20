@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إيدوفليكس - المساعد التعليمي الذكي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
+        .pixel-icon { image-rendering: pixelated; width: 40px; }
+        .active-tab { background: #2563eb; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .card-inner { transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer; position: relative; height: 200px; }
+        .flipped .card-inner { transform: rotateY(180deg); }
+        .backface-hidden { backface-visibility: hidden; position: absolute; inset: 0; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+    </style>
+</head>
+<body class="h-screen flex flex-col lg:flex-row overflow-hidden">
+
+    <aside class="hidden lg:flex w-64 bg-white border-l p-6 flex-col">
+        <div class="flex items-center gap-3 mb-10">
+            <div class="bg-blue-600 p-1 rounded-lg">
+                <svg width="32" height="32" viewBox="0 0 16 16" fill="white"><path d="M7 2h2v2H7V2zm-1 2h4v2H6V4zm-1 2h6v4H5V6zm2 4h2v2H7v-2zm0 2h2v2H7v-2z"/></svg>
+            </div>
+            <h1 class="text-xl font-black text-blue-600">إيدوفليكس</h1>
+        </div>
+        <nav class="space-y-2">
+            <button onclick="showTab('home')" id="nav-home" class="nav-btn active-tab w-full text-right p-3 rounded-xl flex items-center gap-3 font-bold"><i data-lucide="home"></i> الرئيسية</button>
+            <button onclick="showTab('chat')" id="nav-chat" class="nav-btn w-full text-right p-3 rounded-xl flex items-center gap-3 font-bold text-gray-500 hover:bg-gray-50"><i data-lucide="sparkles"></i> المساعد الذكي</button>
+            <button onclick="showTab('cards')" id="nav-cards" class="nav-btn w-full text-right p-3 rounded-xl flex items-center gap-3 font-bold text-gray-500 hover:bg-gray-50"><i data-lucide="layers"></i> البطاقات</button>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col relative overflow-hidden">
+        <header class="p-6 bg-white border-b flex justify-between items-center">
+            <h2 id="title" class="text-lg font-bold">لوحة التحكم ✨</h2>
+            <div class="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-xs font-bold">سلسلة 12 يوم 🔥</div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-6">
+            <div id="home" class="tab-content active space-y-6">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 rounded-[2rem] text-white">
+                    <h3 class="text-2xl font-bold mb-2">أهلاً بك يا بطل!</h3>
+                    <p class="opacity-90 mb-4">ما هو المفهوم الذي تريد تبسيطه اليوم؟</p>
+                    <button onclick="showTab('chat')" class="bg-white text-blue-600 px-6 py-2 rounded-xl font-bold">ابدأ الآن</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white p-6 rounded-2xl border shadow-sm">
+                        <h4 class="font-bold mb-2">الفيزياء</h4>
+                        <div class="h-2 bg-gray-100 rounded-full"><div class="h-full bg-blue-500 w-2/3 rounded-full"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chat" class="tab-content h-full flex flex-col">
+                <div id="messages" class="flex-1 space-y-4 mb-4 overflow-y-auto p-2">
+                    <div class="bg-blue-50 p-4 rounded-2xl max-w-[80%] text-sm">أنا مساعدك الذكي، كيف أساعدك في دراستك اليوم؟</div>
+                </div>
+                <div class="flex gap-2 bg-white p-2 rounded-2xl border shadow-lg">
+                    <input id="userInput" type="text" class="flex-1 p-2 outline-none" placeholder="اشرح لي...">
+                    <button onclick="ask()" class="bg-blue-600 text-white p-3 rounded-xl"><i data-lucide="send"></i></button>
+                </div>
+            </div>
+
+            <div id="cards" class="tab-content">
+                <div class="flex gap-2 mb-8">
+                    <input id="topic" type="text" class="flex-1 p-3 border rounded-xl" placeholder="موضوع البطاقات...">
+                    <button onclick="genCards()" class="bg-indigo-600 text-white px-6 rounded-xl font-bold">توليد ✨</button>
+                </div>
+                <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        function showTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-tab', 'text-white'));
+            document.getElementById('nav-'+id).classList.add('active-tab');
+            document.getElementById('title').innerText = id === 'home' ? 'لوحة التحكم ✨' : (id === 'chat' ? 'المساعد الذكي ✨' : 'بطاقات المراجعة ✨');
+        }
+
+        function ask() {
+            const val = document.getElementById('userInput').value;
+            if(!val) return;
+            const msgBox = document.getElementById('messages');
+            msgBox.innerHTML += `<div class="bg-gray-100 p-4 rounded-2xl max-w-[80%] mr-auto text-sm">${val}</div>`;
+            document.getElementById('userInput').value = '';
+            setTimeout(() => {
+                msgBox.innerHTML += `<div class="bg-blue-600 text-white p-4 rounded-2xl max-w-[80%] text-sm">هذا شرح مبسط لـ (${val}): تخيل أن الأمر مثل... [هنا يتم ربط API جيميناي]</div>`;
+                msgBox.scrollTop = msgBox.scrollHeight;
+            }, 1000);
+        }
+
+        function genCards() {
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = '<p class="col-span-full text-center animate-pulse">جاري التوليد بذكاء...</p>';
+            setTimeout(() => {
+                grid.innerHTML = '';
+                for(let i=1; i<=4; i++) {
+                    grid.innerHTML += `
+                    <div class="perspective" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner w-full h-full">
+                            <div class="backface-hidden bg-white border p-6 rounded-3xl flex items-center justify-center font-bold">سؤال ${i}</div>
+                            <div class="backface-hidden rotate-y-180 bg-indigo-600 text-white p-6 rounded-3xl flex items-center justify-center text-sm">الإجابة الذكية لهذا السؤال...</div>
+                        </div>
+                    </div>`;
+                }
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
